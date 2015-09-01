@@ -1,13 +1,26 @@
+import MIDIDevice from "./device"
+import Note from "./note"
+
+/**
+ * Widi, a web based midi lib that's small
+ * and helpful. Just allows easy access to
+ * the midi devices plugged into your computer.
+ *
+ * @version 0.0.1
+ * @license MIT
+ */
 class Widi {
+  MidiControl
+
+  // All the midi interfaces will be stored here.
+  Inputs
+
   /**
    * Create a new instance of the Widi class.
    *
    * @return {Widi} an interface to play and receive MIDI notes.
    */
   constructor() {
-    // All the midi interfaces will be stored here.
-    this.inputs = []
-
     // Get the available midi devices.
     this.getMIDIAccess()
   }
@@ -18,34 +31,23 @@ class Widi {
    *
    * @return {[type]} [description]
    */
-  @readonly
-  async getMIDIAccess() {
+  async GetMIDIAccess() {
     // Get the interface for doing midi things.
-    this.midi_control = await navigator.requestMIDIAccess()
+    this.MidiControl = await navigator.requestMIDIAccess()
 
     // Get an array of the available inputs.
-    this.inputs = [...this.midi_control.inputs.values()].map(this.NewMIDIDevice)
+    this.Inputs = [...this.MidiControl.inputs.values()].map(this.NewMIDIDevice)
 
     // Exit.
     return this
   }
 
-  @readonly
-  static NewMIDIDevice() {
-
+  static NewMIDIDevice(device) {
+    return new MIDIDevice(device)
   }
 
-  @readonly
   static NewAudioContext() {
-    const Platform = window.AudioContext || window.webkitAudioContext
-
-    return new Platform()
-  }
-}
-
-class MIDIDevice {
-  constructor() {
-
+    // TBD
   }
 }
 
