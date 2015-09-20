@@ -1,5 +1,10 @@
+/* eslint-disable */
+// Ignore this line as Babel needs it but
+// the syntax requires a definition.
+import * as _ from "babel/polyfill"
+/* eslint-enable */
+import * as utils from "./utils"
 import MIDIDevice from "./device"
-import Note from "./note"
 
 /**
  * Widi, a web based midi lib that's small
@@ -10,10 +15,20 @@ import Note from "./note"
  * @license MIT
  */
 class Widi {
-  MidiControl
-
   // All the midi interfaces will be stored here.
-  Inputs
+  Inputs = []
+
+  // Is this instance requesting system exclusivity of the devices?
+  // this will almost certainly be false.
+  @utils.nonenumerable
+  SYSEX = false
+
+  @utils.nonenumerable
+  @utils.readonly
+  events = Object.freeze({
+    deviceChange: new Set(),
+    midiMessage: new Set()
+  })
 
   /**
    * Create a new instance of the Widi class.
@@ -22,32 +37,46 @@ class Widi {
    */
   constructor() {
     // Get the available midi devices.
-    this.getMIDIAccess()
+    navigator.requestMIDIAccess({ sysex: this.SYSEX }).then(midiAccessInterface => {
+      return this.getInputsAndInterfaceFromPromise(midiAccessInterface)
+    })
   }
 
   /**
    * Get the midi control interface and any
    * midi devices on the system.
    *
-   * @return {[type]} [description]
+   * @param {midiAccessInterface} midiAccessInterface : MIDIAccess to get devices and inputs from.
+   * @return {Widi} chainable object.
    */
-  async GetMIDIAccess() {
-    // Get the interface for doing midi things.
-    this.MidiControl = await navigator.requestMIDIAccess()
-
+  getInputsAndInterfaceFromPromise(midiAccessInterface) {
     // Get an array of the available inputs.
-    this.Inputs = [...this.MidiControl.inputs.values()].map(this.NewMIDIDevice)
+    this.Inputs = [...midiAccessInterface.inputs.values()].map(this.NewMIDIDevice.bind(this))
 
     // Exit.
     return this
   }
 
-  static NewMIDIDevice(device) {
-    return new MIDIDevice(device)
+  /**
+   * A map-able function to create midi devices from the available inputs.
+   * @param {MIDIInput} device to register.
+   * @return {MIDIDevice} registered device.
+   */
+  NewMIDIDevice(device) {
+    return new MIDIDevice(device, this)
   }
 
-  static NewAudioContext() {
-    // TBD
+  /**
+   * Attach listeners to devices.
+   *
+   * @param  {String} eventName to listen for.
+   * @param  {Function} callback to execute on this event.
+   * @return {Widi} chainable object.
+   */
+  on(eventName, callback) {
+    this.events[eventName].add(callback)
+
+    return this
   }
 }
 

@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Widi Examples</title>
+  </head>
+  <body>
+    <h1>Open your console</h1>
+    <script src="../dist/widi.js"></script>
+    <script>
+      var Widi = new (require("Widi"))()
+
+      Widi.on("deviceChange", function(device) {
+        console.log("A device has changed!", device)
+      })
+
+      Widi.on("midiMessage", function(midiMessageData) {
+        console.log("Received a message from MIDI device '%s'", this.NAME)
+        console.log(midiMessageData)
+      })
+    </script>
+  </body>
+</html>
