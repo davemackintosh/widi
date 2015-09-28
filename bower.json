@@ -1,0 +1,25 @@
+{
+  "name": "widi",
+  "version": "0.5.0",
+  "homepage": "https://github.com/davemackintosh/widi",
+  "authors": [
+    "davemackintosh <me@davemackintosh.co.uk>"
+  ],
+  "description": "Web Midi, play midi notes using web audio API. Receive notes from a MIDI interface.",
+  "main": "main.js",
+  "moduleType": [
+    "es6"
+  ],
+  "keywords": [
+    "midi",
+    "web"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
